@@ -39,11 +39,14 @@ def perform_clustering(filtered_interactions, eps, min_samples):
     """
     Applies spatial clustering to filtered interactions for each day. Allows to further identify trips and destination patterns in the IMSI mobility.
 
-    This function takes as input a DataFrame containing filtered interactions, as well as the `eps` and `min_samples` parameters for DBSCAN clustering. It applies separate spatial DBSCAN clustering for each day on 'x' and 'y'.
-
-    DBSCAN (Density-Based Spatial Clustering of Applications with Noise) is a density-based clustering algorithm that groups together points that are closely packed together, while marking points that are alone in low-density regions as outliers. It requires two parameters: `eps`, which controls the maximum distance between two samples for them to be considered as in the same neighborhood, and `min_samples`, which controls the minimum number of samples to create a new neighborhood.
-
-    Next, the function merges consecutive clusters by updating the cluster labels and recalculating the cluster sizes. The resulting DataFrame is returned with updated cluster labels and cluster sizes.
+    This function takes as input a DataFrame containing filtered interactions, as well as the `eps` and `min_samples` parameters for DBSCAN clustering.
+    It applies separate spatial DBSCAN clustering for each day on 'x' and 'y'.
+    DBSCAN (Density-Based Spatial Clustering of Applications with Noise) is a density-based clustering algorithm that groups together points that are closely packed together,
+    while marking points that are alone in low-density regions as outliers. It requires two parameters: `eps`,
+    which controls the maximum distance between two samples for them to be considered as in the same neighborhood, and `min_samples`,
+    which controls the minimum number of samples to create a new neighborhood.
+    Next, the function merges consecutive clusters by updating the cluster labels and recalculating the cluster sizes.
+    The resulting DataFrame is returned with updated cluster labels and cluster sizes.
 
     Arguments:
     filtered_interactions: pandas.DataFrame
