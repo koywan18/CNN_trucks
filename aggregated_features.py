@@ -54,7 +54,8 @@ def perform_clustering(filtered_interactions, eps, min_samples):
     eps: float
         The `eps` parameter for DBSCAN clustering. This parameter controls the maximum distance between two samples for them to be considered as in the same neighborhood. 
     min_samples: int
-                 The `min_samples` parameter for DBSCAN clustering. This parameter controls the minimum number of samples in a neighborhood for a point to be considered as a core point. A larger value of `min_samples` will result in fewer clusters, while a smaller value will result in more clusters.
+                 The `min_samples` parameter for DBSCAN clustering. This parameter controls the minimum number of samples in a neighborhood for a point to be considered as a core point.
+                 A larger value of `min_samples` will result in fewer clusters, while a smaller value will result in more clusters.
     Returns: pandas.DataFrame
              DataFrame containing the interactions with updated cluster labels and cluster sizes.
     """
