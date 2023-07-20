@@ -1,14 +1,6 @@
 import pandas as pd
 import numpy as np
-import plotly
-from sklearn.cluster import KMeans
-import plotly.express as px
-from sklearn.preprocessing import StandardScaler
 from datetime import timedelta
-pd.options.plotting.backend = 'plotly'
-from scipy.spatial.distance import cdist
-from tqdm.notebook import trange, tqdm
-from sklearn.cluster import DBSCAN
 
 #In this file are the functions necessary to run the pipeline
 
