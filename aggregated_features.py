@@ -22,11 +22,9 @@ def time_filtration(converted_interactions, threshold):
     converted_interactions: pandas DataFrame
                             Contains CDR data after being passed through preprocessing
                             It is assumed that the timestamp column is named 'end_absolute_time'
-
     threshold: int
                Number of minutes under which the difference between two interactions is to close and the second interaction is filtered out
     
-
     Returns a pandas dataframe with the same columns as the input one
     """
     converted_interactions['delta_time'] = converted_interactions['end_absolutetime_ts'].diff()
@@ -50,7 +48,7 @@ def perform_clustering(filtered_interactions, eps, min_samples):
 
     Arguments:
     filtered_interactions: pandas.DataFrame
-                                  DataFrame containing filtered interactions.
+                                  DataFrame containing preprocessed and filtered CDR interactions.
     eps: float
         The `eps` parameter for DBSCAN clustering. This parameter controls the maximum distance between two samples for them to be considered as in the same neighborhood. 
     min_samples: int
@@ -115,7 +113,7 @@ def display_clustering(interactions, hashed_imsi, eps, min_points, time_filtrati
     Displays the output of a clustering on CDR interactions that distinguish the trips from the destinations.
 
     Parameters:
-    interactions (pandas.DataFrame): A DataFrame containing GPS interactions.
+    interactions (pandas.DataFrame): A DataFrame containing preprocessed (and ideally filtered) CDR interactions.
     hashed_imsi (str): The hashed IMSI of the user.
     eps (float): The maximum distance between two samples for them to be considered as in the same neighborhood.
     min_points (int): The number of samples in a neighborhood for a point to be considered as a core point.
@@ -136,3 +134,63 @@ def display_clustering(interactions, hashed_imsi, eps, min_points, time_filtrati
         fig.update_traces(text=dates_df['end_absolutetime_ts'])
         fig.update_layout(height=600, width=1000, title_text="Interactions groupbe by trip and destinations")
     return fig
+
+def compute_h3_number(interactions, resolution):
+    """
+    Issue the number of H3 resolutions 7 where an IMSI has at least one interaction, reflect how much moved the IMSI spatially.
+    Parameters:
+    interactions (pandas.DataFrame): A DataFrame containing preprocessed (and ideally filtered) CDR interactions.
+    resolution (int): the h3 resolution (from 1 to 16) you want to take as a scale for the imsi's spatial expansion.
+                      Resolution 7 is usually used.
+
+    Returns: int
+             The number of h3 where the IMSI has at least one interaction for the given resolution
+    
+    """
+    latitudes = interactions['latitude'].values
+    longitudes = interactions['longitude'].values
+    h3_indexes = []
+    for lat, lon in zip(latitudes, longitudes):
+        h3_indexes.append(h3.geo_to_h3(lat.item(), lon.item(), resolution=resolution))
+    return np.unique(h3_indexes).shape[0]
+
+def compute_speed(converted_interactions, filtration_outlier_threshold=80):
+    """
+    Add instantaneous speed and filter outliers according to speed
+
+    Parameters:
+    -----------
+    converted_interactions : pandas.DataFrame
+        A dataframe containing the following columns:
+            - end_absolutetime_ts : datetime64[ns]
+            - x : float
+            - y : float
+
+    filtration_outlier_threshold : float, optional (default=80)
+        The threshold value for filtering out instantaneous speed outliers. Any point with an in-speed and an out-speed superior to this threshold is filtered out.
+
+    Returns:
+    --------
+    pandas.DataFrame
+        A filtered dataframe containing the following columns:
+            - end_absolutetime_ts : datetime64[ns]
+            - x : float
+            - y : float
+            - instantaneous_speed : float
+            
+    """
+    converted_interactions_copy = converted_interactions.copy()
+    converted_interactions_copy['end_absolutetime_ts'] = pd.to_datetime(converted_interactions_copy['end_absolutetime_ts'])
+    converted_interactions_copy['deltat'] = converted_interactions_copy['end_absolutetime_ts'].diff()
+    converted_interactions_copy['deltal'] = (abs(converted_interactions_copy['y'].diff()) + abs(converted_interactions_copy['x'].diff()))
+
+    converted_interactions_copy['deltat'] = converted_interactions_copy['deltat'].where(lambda x: x >= pd.Timedelta(0))
+    converted_interactions_copy['instantaneous_speed'] = converted_interactions_copy['deltal'] / converted_interactions_copy['deltat'].dt.total_seconds()
+
+    if filtration_outlier_threshold is not None:
+        mask = (converted_interactions_copy['instantaneous_speed'] > filtration_outlier_threshold) & (converted_interactions_copy['instantaneous_speed'].shift(-1) > filtration_outlier_threshold)
+        converted_interactions_copy = converted_interactions_copy[~mask]
+
+    converted_interactions_copy = converted_interactions_copy.query(f'instantaneous_speed != {np.inf}') #filtration of outliers also applies to inf
+
+    return converted_interactions_copy.drop(['deltat', 'deltal'], axis=1)
