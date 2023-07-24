@@ -5,14 +5,10 @@ from sklearn.cluster import KMeans
 import plotly.express as px
 from sklearn.preprocessing import StandardScaler
 from datetime import timedelta
-pd.options.plotting.backend = 'plotly'
 from scipy.spatial.distance import cdist
 from tqdm.notebook import trange, tqdm
-import re
 import plotly.graph_objs as go
 import numpy as np
-from geojson import Feature, FeatureCollection
-import inspect
 import matplotlib.pyplot as plt
 import torch
 import torch.nn as nn
@@ -29,3 +25,8 @@ from sklearn.preprocessing import MinMaxScaler
 from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay
 from sklearn.metrics import f1_score
 
+from CNN_trucks.CDR_preprocessing import *
+from CNN_trucks.aggregated_features import *
+
+max_x = 260
+max_y = 277
