@@ -1,9 +1,6 @@
 import pandas as pd
 import numpy as np
-import plotly
-import plotly.express as px
 from datetime import timedelta
-pd.options.plotting.backend = 'plotly'
 from tqdm.notebook import trange, tqdm
 import h3
 from sklearn.cluster import DBSCAN
@@ -164,7 +161,7 @@ def compute_speed(converted_interactions, filtration_outlier_threshold=80):
 
     filtration_outlier_threshold : float, optional (default=80)
         The threshold value for filtering out instantaneous speed outliers. Any point with an in-speed and an out-speed superior to this threshold is filtered out.
-
+        Initialised at 80m.s^-1 to avoid most disturbing outliers, should be set lower to prevent others (50m.s^-1 for instance)
     Returns:
     --------
     pandas.DataFrame
@@ -177,11 +174,11 @@ def compute_speed(converted_interactions, filtration_outlier_threshold=80):
     """
     converted_interactions_copy = converted_interactions.copy()
     converted_interactions_copy['end_absolutetime_ts'] = pd.to_datetime(converted_interactions_copy['end_absolutetime_ts'])
-    converted_interactions_copy['deltat'] = converted_interactions_copy['end_absolutetime_ts'].diff()
+    converted_interactions_copy['delta_time'] = converted_interactions_copy['end_absolutetime_ts'].diff()
     converted_interactions_copy['deltal'] = (abs(converted_interactions_copy['y'].diff()) + abs(converted_interactions_copy['x'].diff()))
 
-    converted_interactions_copy['deltat'] = converted_interactions_copy['deltat'].where(lambda x: x >= pd.Timedelta(0))
-    converted_interactions_copy['instantaneous_speed'] = converted_interactions_copy['deltal'] / converted_interactions_copy['deltat'].dt.total_seconds()
+    converted_interactions_copy['delta_time'] = converted_interactions_copy['delta_time'].where(lambda x: x >= pd.Timedelta(0))
+    converted_interactions_copy['instantaneous_speed'] = converted_interactions_copy['deltal'] / converted_interactions_copy['delta_time'].dt.total_seconds()
 
     if filtration_outlier_threshold is not None:
         mask = (converted_interactions_copy['instantaneous_speed'] > filtration_outlier_threshold) & (converted_interactions_copy['instantaneous_speed'].shift(-1) > filtration_outlier_threshold)
@@ -189,7 +186,7 @@ def compute_speed(converted_interactions, filtration_outlier_threshold=80):
 
     converted_interactions_copy = converted_interactions_copy.query(f'instantaneous_speed != {np.inf}') #filtration of outliers also applies to inf
 
-    return converted_interactions_copy.drop(['deltat', 'deltal'], axis=1)
+    return converted_interactions_copy
 
 def select_trips_from_clustering(clustered_interactions):
     """
@@ -295,3 +292,35 @@ def additional_statistics_pipeline_IMSI(interactions_hashed_imsi, h3_resolution,
     mean_duration_destination = pd.Series(time_destinations_list).mean().total_seconds()
     l_stat += [mean_speed_trip, mean_speed_destination, duration_trip/day_number, duration_destination/day_number, destination_number/day_number, mean_duration_destination]
     return l_stat
+
+def apply_pipeline(clean_interactions, h3_resolution, eps, min_points, time_filtration_max):
+    """
+    Apply the pipeline to all the imsi of an interaction dataframe
+    The function takes as input:
+    - clean_interactions: a pandas dataframe containing the preprocessed interactions sorted by imsi and timestamp
+    - h3_resolution: the resolution of the H3 grid used to compute the number of H3 cells per day
+    - eps: the maximum distance between two samples for them to be considered as part of the same cluster for DBSCAN clustering
+    - min_points: the number of samples in a neighborhood for a point to be considered as a core point for DBSCAN clustering
+    - time_filtration_max: the minimum time difference between two interactions
+
+    Returns:
+    --------
+    pandas.DataFrame
+        A dataframe indexed by imsi with the packed features in the column Variable, and the unpacked features under their respective name
+        The packed features are useful for the CNN pipeline while the unpacked for random forest and any other staistical treatment
+    """
+    output_pipeline = (clean_interactions.groupby('hashed_imsi')
+    .apply(additional_statistics_pipeline_IMSI, h3_resolution, eps, min_points, time_filtration_max)
+    .to_frame()
+    .dropna()
+    .rename(columns = {0 : 'Variables'}))
+    (output_pipeline[['h3_number_per_day', 
+    'total_interactions_per_day', 
+    'trip_interactions_per_day', 
+    'destination_interactions_per_day', 
+    'mean_speed_trip', 'mean_speed_destination', 
+    'duration_trip_per_day', 'duration_destination_per_day', 
+    'destination_number_per_day', 
+    'mean_duration_destination']] )= pd.DataFrame(output_pipeline['Variables'].to_list(),
+    index=output_pipeline.index)
+    return output_pipeline.dropna()
