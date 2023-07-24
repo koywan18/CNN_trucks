@@ -1,14 +1,10 @@
 import pandas as pd
 import numpy as np
 import plotly
-from sklearn.cluster import KMeans
 import plotly.express as px
-from sklearn.preprocessing import StandardScaler
 from datetime import timedelta
 pd.options.plotting.backend = 'plotly'
-from scipy.spatial.distance import cdist
 from tqdm.notebook import trange, tqdm
-import re
 import h3
 from sklearn.cluster import DBSCAN
 import plotly.graph_objs as go
@@ -260,7 +256,7 @@ def additional_statistics_pipeline_IMSI(interactions_hashed_imsi, h3_resolution,
     - eps: the maximum distance between two samples for them to be considered as part of the same cluster for DBSCAN clustering
     - min_points: the number of samples in a neighborhood for a point to be considered as a core point for DBSCAN clustering
     - time_filtration_max: the minimum time difference between two interactions
-    
+
     The function returns a list of 10 statistics:
     - h3_per_day: the average number of H3 cells per day
     - total_interactions_per_day: the average number of interactions per day
