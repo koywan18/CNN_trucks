@@ -5,7 +5,6 @@ from tqdm.notebook import trange, tqdm
 from CNN_trucks.CDR_preprocessing import *
 from CNN_trucks.aggregated_features import *
 
-label_dictionnary = pd.read_csv('CNN_trucks\labels_for_cnn.csv', index_col=False).set_index('hashed_imsi').to_dict()['label']
 
 def heatmap_generation(interactions, IMSI, max_x = 260, max_y = 277, unit=600, max_quantile_scaler = 92):
     """
@@ -31,7 +30,6 @@ def heatmap_generation(interactions, IMSI, max_x = 260, max_y = 277, unit=600, m
     numpy.array
         A numpy array where each coordinate corresponds to the rescaled number of interactions in a square of dimension unit*unit 
 
-    interacciones : dataframe with hashed imsi as index
     """
     interactions_df = interactions.loc[IMSI].copy()
     interactions_df['y_index'] = interactions_df['y'] / unit #600m is the new unit
@@ -101,10 +99,8 @@ def input_pipeline(interactions, label_dictionnary, h3_resolution = 7, eps = 270
         The quantile cap to rescale the heatmap and give more weight to points with fewer interactions
     Returns:
     --------
-    numpy.array
-        A numpy array where each coordinate corresponds to the rescaled number of interactions in a square of dimension unit*unit 
-
-    interacciones : dataframe with hashed imsi as index
+    pandas.DataFrame
+        A pandas Dataframe where are stored the array concatenating the heatmap and aggregated features as well as the label of each IMSI.
     """
     imsi_array_list = []
     imsi_out_of_map = []
