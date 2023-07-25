@@ -51,7 +51,7 @@ def end_geo_treatment_lat(stringg):
     return separation[1]
 
 
-def preprocess(interactions, lon0, lat0):
+def preprocess(interactions, lon0 = lon0, lat0 = lat0):
     """
     Converts the raw CDR database into a processable dataframe
     First converts the string encapsulating Earth coordinates into longitude (float) and latitude (float)
