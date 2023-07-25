@@ -5,7 +5,7 @@ from tqdm.notebook import trange, tqdm
 from CNN_trucks.CDR_preprocessing import *
 from CNN_trucks.aggregated_features import *
 
-label_dictionnary = pd.read_csv('CNN_trucks\labels_for_cnn.csv', index_col=False).to_dict()['label']
+label_dictionnary = pd.read_csv('CNN_trucks\labels_for_cnn.csv', index_col=False).set_index('hashed_imsi').to_dict()['label']
 
 def heatmap_generation(interactions, IMSI, max_x = 260, max_y = 277, unit=600, max_quantile_scaler = 92):
     """

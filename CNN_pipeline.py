@@ -27,6 +27,13 @@ from sklearn.metrics import f1_score
 
 from CNN_trucks.CDR_preprocessing import *
 from CNN_trucks.aggregated_features import *
+from CNN_trucks.input_generation import *
+
 
 max_x = 260
 max_y = 277
+
+interactions = pd.read_csv('all_imsis_cnn.csv')
+label_dictionnary = pd.read_csv('CNN_trucks\labels_for_cnn.csv', index_col=False).set_index('hashed_imsi').to_dict()['label']
+
+inputs = input_pipeline(interactions, label_dictionnary)
