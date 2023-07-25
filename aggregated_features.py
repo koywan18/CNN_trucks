@@ -252,7 +252,7 @@ def additional_statistics_pipeline_IMSI(interactions_hashed_imsi, h3_resolution,
     - h3_resolution: the resolution of the H3 grid used to compute the number of H3 cells per day
     - eps: the maximum distance between two samples for them to be considered as part of the same cluster for DBSCAN clustering
     - min_points: the number of samples in a neighborhood for a point to be considered as a core point for DBSCAN clustering
-    - time_filtration_max: the minimum time difference between two interactions
+    - time_filtration_max: the minimum time difference between two interactions in minutes
 
     The function returns a list of 10 statistics:
     - h3_per_day: the average number of H3 cells per day
