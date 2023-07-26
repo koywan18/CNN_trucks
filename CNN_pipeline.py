@@ -25,7 +25,7 @@ from CNN_architecture import *
 
 
 
-def Generate_dataloaders(interactions_file_path, label_file_path, bs = 8, max_x = 260, max_y = 277, test_size = 0.25):
+def generate_dataloaders(interactions_file_path, label_file_path, bs = 8, max_x = 260, max_y = 277, test_size = 0.25):
     interactions = pd.read_csv(f'{interactions_file_path}')
     label_dictionnary = pd.read_csv(f'{label_file_path}', index_col=False).set_index('hashed_imsi').to_dict()['label']
     input_dataframe = input_pipeline(interactions, label_dictionnary, max_x = max_x, max_y = max_y)
