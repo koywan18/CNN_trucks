@@ -2,8 +2,8 @@ import pandas as pd
 import numpy as np
 from tqdm.notebook import trange, tqdm
 
-from CNN_trucks.CDR_preprocessing import *
-from CNN_trucks.aggregated_features import *
+from CDR_preprocessing import *
+from aggregated_features import *
 
 
 def heatmap_generation(interactions, IMSI, max_x = 260, max_y = 277, unit=600, max_quantile_scaler = 92):

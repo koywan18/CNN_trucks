@@ -18,9 +18,9 @@ from sklearn.preprocessing import MinMaxScaler
 from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay
 from sklearn.metrics import f1_score
 
-from CNN_trucks.CDR_preprocessing import *
-from CNN_trucks.aggregated_features import *
-from CNN_trucks.input_generation import *
+from CDR_preprocessing import *
+from aggregated_features import *
+from input_generation import *
 
 device = 'cuda' if torch.cuda else 'cpu'
 
@@ -87,18 +87,17 @@ def train(model,data_loader,loss_fn,optimizer,n_epochs=1):
         print('Train - Loss: {:.4f} Acc: {:.4f}'.format(epoch_loss, epoch_acc))
     return loss_train, acc_train, tensor
 
-    def test(model,data_loader):
-    bs = x_test_tensor.shape[0]
-    prediction = torch.empty(bs)
-    y_test_final = torch.empty(bs)
-    score_cumulated = torch.empty((bs,2))
+def test(model,data_loader, loss_fn):
+    bs = data_loader.batch_size
+    y_test_final = torch.empty(bs*len(data_loader))
+    output_cumulated = torch.empty((bs*len(data_loader),2))
 
     model.train(False)
     counter = 0
     running_corrects = 0.0
     running_loss = 0.0
     size = 0
-    tensor_test = []
+    predicted_y = []
     for data in data_loader:
         x_test_bs, y_test_bs = data
         x_test_bs = x_test_bs.to(device)
@@ -107,17 +106,17 @@ def train(model,data_loader,loss_fn,optimizer,n_epochs=1):
         x1_test = x_test_bs[:,:-1,:]
         x2_test = x_test_bs[:,-1,:10]
         y_test_bs =  y_test_bs.to(device)            
-        bs = y_test_bs.size(0)
         outputs = model(x1_test, x2_test)
         loss = loss_fn(outputs,y_test_bs)
         _,preds = torch.max(outputs,1)
+
         running_corrects += torch.sum(preds == y_test_bs)
         running_loss += loss.data
         size += bs
-        score_cumulated[counter:counter+bs] = outputs.detach()
-        prediction[counter:counter+bs]= preds
+
+        output_cumulated[counter:counter+bs] = outputs.detach()
         y_test_final[counter:counter+bs]= y_test_bs
         counter += bs
-        tensor_test.append(model.get_tensor())
+        predicted_y.append(model.get_tensor())
     print('Test - Loss: {:.4f} Acc: {:.4f}'.format(running_loss / size, running_corrects.item() / size))
-    return running_loss, tensor_test, prediction, y_test_final, score_cumulated
+    return running_loss, predicted_y, y_test_final, output_cumulated
