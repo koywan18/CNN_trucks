@@ -5,7 +5,6 @@ from tqdm.notebook import trange, tqdm
 from CDR_preprocessing import *
 from aggregated_features import *
 
-
 def heatmap_generation(interactions, IMSI, max_x = 260, max_y = 277, unit=600, max_quantile_scaler = 92):
     """
     This function generates a 2D black and white heatmap of an IMSI's interactions
@@ -131,6 +130,10 @@ def input_pipeline(interactions, label_dictionnary, h3_resolution = 7, eps = 270
             imsi_array_list.append(np.concatenate([array_imsi, np.array([aggregated_data_imsi])]))
 
     imsi_list_in = list(filter(lambda x: x not in imsi_out_of_map, imsi_list))
-    input_dataframe = (pd.DataFrame({'hashed_imsi' : imsi_list_in, 'array': imsi_array_list})
-                       .assign(label = lambda df: df.hashed_imsi.map(label_dictionnary)))
+    if label_dictionnary is not None:
+        input_dataframe = (pd.DataFrame({'hashed_imsi' : imsi_list_in, 'array': imsi_array_list})
+                        .assign(label = lambda df: df.hashed_imsi.map(label_dictionnary)))
+    
+    else:
+        input_dataframe = pd.DataFrame({'hashed_imsi' : imsi_list_in, 'array': imsi_array_list})
     return input_dataframe

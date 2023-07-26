@@ -38,13 +38,10 @@ class classifier(nn.Module):
         x1 = F.relu(x1)
         x1 = F.max_pool2d(x1,4)
         x = torch.cat([torch.flatten(self.fc1(x1), start_dim = 1), x2], dim = 1)
-        self.saved_tensor = x.detach().clone()
         x = F.relu(x)
         x = self.fc2(x)
         return F.log_softmax(x, dim=1)
     
-    def get_tensor(self):
-        return self.saved_tensor
 
 
 def train(model,data_loader,loss_fn,optimizer,n_epochs=1):
@@ -91,7 +88,6 @@ def test(model,data_loader, loss_fn):
     bs = data_loader.batch_size
     y_test_final = torch.empty(bs*len(data_loader))
     output_cumulated = torch.empty((bs*len(data_loader),2))
-
     model.train(False)
     counter = 0
     running_corrects = 0.0
@@ -105,7 +101,7 @@ def test(model,data_loader, loss_fn):
         y_test_bs = y_test_bs.type(torch.LongTensor)
         x1_test = x_test_bs[:,:-1,:]
         x2_test = x_test_bs[:,-1,:10]
-        y_test_bs =  y_test_bs.to(device)            
+        y_test_bs =  y_test_bs.to(device)
         outputs = model(x1_test, x2_test)
         loss = loss_fn(outputs,y_test_bs)
         _,preds = torch.max(outputs,1)
@@ -113,7 +109,6 @@ def test(model,data_loader, loss_fn):
         running_corrects += torch.sum(preds == y_test_bs)
         running_loss += loss.data
         size += bs
-
         output_cumulated[counter:counter+bs] = outputs.detach()
         y_test_final[counter:counter+bs]= y_test_bs
         counter += bs
