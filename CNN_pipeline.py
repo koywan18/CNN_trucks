@@ -96,17 +96,6 @@ def train(model,data_loader,loss_fn,optimizer,n_epochs=1):
         print('Train - Loss: {:.4f} Acc: {:.4f}'.format(epoch_loss, epoch_acc))
     return model, loss_train, acc_train
 
-def run_training(model, train_dataloader, n_epochs, learning_rate, loss_fn):
-
-    device = 'cuda' if torch.cuda else 'cpu'
-    # your SGD optimizer
-    optimizer_cl = torch.optim.Adam(model.parameters(),lr=learning_rate)
-    # and train for 10 epochs
-    model =  model.to(device)
-    l_t, a_t, tensor = train(model,train_dataloader,loss_fn,optimizer_cl,n_epochs = n_epochs)
-    return model
-
-
 def test(model,data_loader, loss_fn):
     device = 'cuda' if torch.cuda else 'cpu'
     bs = data_loader.batch_size
@@ -137,12 +126,6 @@ def test(model,data_loader, loss_fn):
     print('Test - Loss: {:.4f} Acc: {:.4f}'.format(running_loss / counter, running_corrects.item() / counter))
     y_test_final_np, output_cumulated = y_test_final.to('cpu').numpy(), output_cumulated.to('cpu').numpy()
     return running_loss, predicted_class, y_test_final_np, output_cumulated
-
-def run_testing(model, test_dataloader, loss_fn):
-
-    running_loss, predicted_y, y_test_bs, output_cumulated = test(model,test_dataloader, loss_fn)
-    y_test_bs_np, output_cumulated = y_test_bs.to('cpu').numpy(), output_cumulated.to('cpu').numpy()
-    return running_loss, predicted_y, y_test_bs_np, output_cumulated
 
 def predict(model, dataloader):
 
