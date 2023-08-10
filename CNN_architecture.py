@@ -18,9 +18,9 @@ class classifier(nn.Module):
         Process the forward pass through the neural network
         Inputs:
             - x1: torch.FloatTensor
-                the heatmap, an array of 260*277
+                the heatmap
             - x2: torch.FloatTensor
-                the 10 aggregated features
+                the aggregated features
         Returns:
             torch.FloatTensor
             A tensor of shape 2*8 containing the prediction for each element in a batch to belong to each class
