@@ -9,6 +9,23 @@ from input_generation import *
 device = 'cuda' if torch.cuda else 'cpu'
 
 class classifier(nn.Module):
+    """
+    This class builds a neural network to classify imsi on board a truck from others
+
+    Methods:
+    -------
+    forward(self,x1,x2)
+        Process the forward pass through the neural network
+        Inputs:
+            - x1: torch.FloatTensor
+                the heatmap, an array of 260*277
+            - x2: torch.FloatTensor
+                the 10 aggregated features
+        Returns:
+            torch.FloatTensor
+            A tensor of shape 2*8 containing the prediction for a batch to belong to each class
+
+    """
     
     def __init__(self):
         super(classifier, self).__init__()

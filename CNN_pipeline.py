@@ -11,7 +11,40 @@ from aggregated_features import *
 from input_generation import *
 from CNN_architecture import *
 
-def generate_dataloaders(interactions_file_path, label_file_path, bs = 8, max_x = 260, max_y = 277, test_size = 0.25):
+def generate_dataloaders(interactions_file_path, label_file_path = None, bs = 8, max_x = 260, max_y = 277, test_size = 0.25):
+    """
+    This function takes as an argument labelled or unlabelled data and generates pytorch dataloader to feed the neural network and either train it, test it or make predictions.
+    Parameters:
+    -----------
+    interactions_file_path : string
+        The relative or absolute path towards the interactions dataframe
+    label_file_path : string
+        The relative or absolute path towards the label dataframe
+        If the latter exists, it should contains the collowing columns:
+            - hashed_imsi: string
+            - label: int 0 or 1
+        If the goal is to make a prediction on unlabelled data, this argument should be kept as None
+    bs : int
+        The batch size (default = 8)
+    max_x : int
+        The maximum value of the x (converted longitude) dimension in the array (default = 260)
+    max_y : int
+        The maximum value of the y (converted latitude) dimension in the array (default = 277)
+    test_size : float
+        A proportion between 0 and 1 that indicates the relative size of the test set in case of labelled data (default = 0.25)
+        
+    Returns:
+    --------
+    If label_file_path is not None:
+        train_dataloader: torch.utils.data.dataloader.DataLoader
+            A pytorch dataloader with labelled data for training
+        test_dataloader: torch.utils.data.dataloader.DataLoader
+            A pytorch dataloader with labelled data for testing
+    
+    If label_file_path is None:
+        dataloader: torch.utils.data.dataloader.DataLoader
+        A pythorch dataloader with unlabelled data for predictions
+    """
     interactions = pd.read_csv(f'{interactions_file_path}')
     if label_file_path is not None:
         label_dictionnary = pd.read_csv(f'{label_file_path}', index_col=False).set_index('hashed_imsi').to_dict()['label']
@@ -58,6 +91,34 @@ def generate_dataloaders(interactions_file_path, label_file_path, bs = 8, max_x 
         return dataloader
 
 def train(model,data_loader,loss_fn,optimizer,n_epochs=1):
+    """
+    This function trains the model that is fed on GPU preferentially.
+    It has to be noted that the classification model has to be from the CNN_architecture.classifier class.
+
+    Parameters:
+    -----------
+    model: CNN_architecture.classifier
+        The classification model that is trained
+    data_loader: torch.utils.data.dataloader.DataLoader
+        The dataloader that contains the labelled training set
+    loss_fn: torch.nn loss function
+        The function that is used to compute the loss between the output of the model and the target
+        ex: nn.CrossEntropyLoss()
+    optimizer: torch.optim
+        The optimizer that is used to process the gradient descent
+        ex: torch.optim.Adam(conv_class.parameters(),lr=1e-3)
+    n_epochs : int
+        The number of epochs in the training
+        
+    Returns:
+    --------
+    model: classifier
+        The trained classification model
+    loss_train: list
+        The list of the average loss of each epoch
+    acc_train: list
+        The list of average accuracy of each epoch
+    """
     device = 'cuda' if torch.cuda else 'cpu'
     model =  model.to(device)
     model.train(True)
@@ -97,6 +158,30 @@ def train(model,data_loader,loss_fn,optimizer,n_epochs=1):
     return model, loss_train, acc_train
 
 def test(model,data_loader, loss_fn):
+    """
+    This function tests a model on GPU preferentially and returns predicted and true labels in order to compute statistics
+
+    Parameters:
+    -----------
+    model: CNN_architecture.classifier
+        The classification model that is tested (preferentially trained)
+    data_loader: torch.utils.data.dataloader.DataLoader
+        The dataloader that contains the labelled test set
+    loss_fn: torch.nn loss function
+        The function that is used to compute the loss between the output of the model and the target
+        ex: nn.CrossEntropyLoss()
+        
+    Returns:
+    --------
+    running_loss: float
+        The cumulated loss over the test set
+    predicted_class: np.array
+        An array containing the predicted labels for each imsi in the test set
+    y_test_final_np: np.array
+        An array containing the true labels for each imsi in the test set
+    output_cumulated: np.array
+        An array containing the outputs of the neural network for each imsi in the same order than predicted_class and y_test_final_np
+    """
     device = 'cuda' if torch.cuda else 'cpu'
     bs = data_loader.batch_size
     y_test_final = torch.empty(bs*len(data_loader))
@@ -128,6 +213,23 @@ def test(model,data_loader, loss_fn):
     return running_loss, predicted_class, y_test_final_np, output_cumulated
 
 def predict(model, dataloader):
+    """
+    This function issues a prediction on unlabelled data using a classification model of CNN_architecure.classifier class.
+
+    Parameters:
+    -----------
+    model: CNN_architecture.classifier
+        The classification model through which the data is processed (preferentially trained)
+    data_loader: torch.utils.data.dataloader.DataLoader
+        The dataloader that contains the unlabelled set
+        
+    Returns:
+    --------
+    prediction: np.array
+        An array containing the predicted labels for each imsi in the test set
+    output_cumulated: np.array
+        An array containing the outputs of the neural network for each imsi in the same order than predicted_class and y_test_final_np
+    """
 
     bs = dataloader.batch_size
     output_cumulated = torch.empty((bs*len(dataloader),2))
