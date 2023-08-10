@@ -23,7 +23,7 @@ class classifier(nn.Module):
                 the 10 aggregated features
         Returns:
             torch.FloatTensor
-            A tensor of shape 2*8 containing the prediction for a batch to belong to each class
+            A tensor of shape 2*8 containing the prediction for each element in a batch to belong to each class
 
     """
     
