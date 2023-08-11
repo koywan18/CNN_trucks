@@ -15,6 +15,7 @@ A set of aggregated features is computed to illustrate the mobility of each IMSI
 •	Mean speed during trips  
 •	Mean speed within destination  
 •	Mean duration of destinations  
+
 •	Number of H3 resolution 7 where there is at least one interaction  
 •	Number of interactions during a trip per day  
 •	Number of interactions within a destination per day  
