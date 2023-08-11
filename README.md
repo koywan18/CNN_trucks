@@ -13,7 +13,8 @@ This allows to capture both geographical and mobility patterns.
 A set of aggregated features is computed to illustrate the mobility of each IMSI and feed it into the neural network. Special attention is paid to distinguishing between road and urban user behavior, thanks to a previous clustering. The features are stated as follows:
 •	Destination number per day  
 
-•	Mean speed during trips
+•	Mean speed during trips  
+
 •	Mean speed within destination
 •	Mean duration of destinations
 •	Number of H3 resolution 7 where there is at least one interaction
