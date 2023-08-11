@@ -13,14 +13,14 @@ This allows to capture both geographical and mobility patterns.
 A set of aggregated features is computed to illustrate the mobility of each IMSI and feed it into the neural network. Special attention is paid to distinguishing between road and urban user behavior, thanks to a previous clustering. The features are stated as follows:  
 •	Destination number per day  
 •	Mean speed during trips  
-•	Mean speed within destination
-•	Mean duration of destinations
-•	Number of H3 resolution 7 where there is at least one interaction
-•	Number of interactions during a trip per day
-•	Number of interactions within a destination per day
-•	Number of interactions per day
-•	Mean duration of destinations per day
-•	Mean duration of trip per day
+•	Mean speed within destination  
+•	Mean duration of destinations  
+•	Number of H3 resolution 7 where there is at least one interaction  
+•	Number of interactions during a trip per day  
+•	Number of interactions within a destination per day  
+•	Number of interactions per day  
+•	Mean duration of destinations per day  
+•	Mean duration of trip per day  
 
 ### Raw data heatmap
 IMSI's interactions in the interest zone are summed up in a heatmap. The unit of the latter was set to 600m in the study for it allowed to reduce the dimension effectively without loosing key informations.
