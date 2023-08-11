@@ -25,10 +25,19 @@ A set of aggregated features is computed to illustrate the mobility of each IMSI
 ### Raw data heatmap
 IMSI's interactions in the interest zone are summed up in a heatmap. The unit of the latter was set to 600m in the study for it allowed to reduce the dimension effectively without loosing key informations.
 
+### Creation of a calibration set
+There was no labelled set available to train my model as the litterature is still poor on the subject. Consequently, I manually created a calibration set by visualising the itinerary of some IMSIs one by one, computing their average speed and identifying typical trucks stops (logistic zones, commercial ports, airports, etc). 
+
 ### Neural Network architecure
 Both heatmap and aggregated features are concatenated in a tensor that is fed to the neural network. First the heatmap is processed through Convolutionnal and Max Pooling Layers in order to extract the geographical features and reduce the dimension. The geographical features are then concatenated to the aggregated features and the resulting vector is passed, after a Relu activation, through a linear classifier.
 
 ### Results
-After an approximately 40-epoch training, the model converges and performs as follows on the test set:
-Accuracy: 0.9297 on average (15 training on random set distribution)
-f1_score: 0.8861 on average (15 training on random set distribution)
+After an approximately 40-epoch training, the model converges and performs as follows on the test set:  
+Accuracy: 0.9297 on average (15 training on random set distribution)  
+f1_score: 0.8861 on average (15 training on random set distribution)  
+
+This outperform the basic classification models on the same set:  
+Random Forest: 0.8212 average accuracy on 15 itérations  
+Logistic Regression 0.8110 average accuracy on 15 itérations  
+SVM 0.8081 (kernel = linear) average accuracy on 15 itérations
+
