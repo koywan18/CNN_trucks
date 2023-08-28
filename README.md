@@ -34,14 +34,14 @@ Both heatmap and aggregated features are concatenated in a tensor that is fed to
 ### Results
 The calibration set is splitted randomly into a training set (75% of the data) and a test set (25% of the data).
 The model converges after an approximately 40-epoch training.
-In order to issue some results and compare them to comon reference models -logistic regression, random forest, support vector machine (SVM)- we performed 15 successive training and testing on aleatory calibration set splitting and took the average for each statistics.
+In order to issue some results and compare them to common reference models -logistic regression, random forest, support vector machine (SVM)- we performed 15 successive trainings and testings on aleatory calibration set splitting and took the average for each statistics.
 Thereafter is displayed the comparison between models for various statistics:
 
- Statistics         | Accuracy | Precision | Recall | F1 score | AUC ROC |
-|-------------------|----------|-----------|--------|----------|---------|
-|Logistic regression|0.837     |0.818      |0.711   |0.761     |0.895    |
-|Random forest      |	0.827    |0.833      |0.658   |0.735     |0.848    |
-|SVM (kernel rbf)   |0.817     |0.732      |0.789   |0.759     |0.852    |
-|Concatenated CNN   |0.933     |0.970      |0.842   |0.901     |0.922    |
+ Statistics         | Accuracy | Precision | Recall  | F1 score | AUC ROC |
+|-------------------|----------|-----------|---------|----------|---------|
+|Logistic regression|0.837     |0.818      |0.711    |0.761     |0.895    |
+|Random forest      |	0.827    |0.833      |0.658    |0.735     |0.848    |
+|SVM (kernel rbf)   |0.817     |0.732      |0.789    |0.759     |0.852    |
+|Concatenated CNN   |**0.933** |**0.970**  |**0.842**|**0.901** |**0.922**|
 
 
