@@ -32,19 +32,16 @@ There was no labelled set available to train the model as the litterature is sti
 Both heatmap and aggregated features are concatenated in a tensor that is fed to the neural network. First the heatmap is processed through Convolutionnal and Max Pooling Layers in order to extract the geographical features and reduce the dimension. The geographical features are then concatenated to the aggregated features and the resulting vector is passed, after a Relu activation, through a linear classifier.
 
 ### Results
-After an approximately 40-epoch training, the model converges and performs as follows on the test set:  
-**Accuracy: 0.9297** on average (15 training on random set distribution)  
-**F1 score: 0.8861** on average (15 training on random set distribution)  
+The calibration set is splitted randomly into a training set (75% of the data) and a test set (25% of the data).
+The model converges after an approximately 40-epoch training.
+In order to issue some results and compare them to comon reference models -logistic regression, random forest, support vector machine (SVM)- we performed 15 successive training and testing on aleatory calibration set splitting and took the average for each statistics.
+Thereafter is displayed the comparison between models for various statistics:
 
-The model outperforms the basic classifiers on the same set:  
-**Random Forest: 0.8212 average accuracy** on 15 itérations  
-**Logistic Regression 0.8110 average accuracy** on 15 itérations  
-**SVM 0.8081 (kernel = linear) average accuracy** on 15 itérations
-
-	                Accuracy	Precision	Recall F1 score	AUC ROC
-Logistic regression	0.837	  0.818	    0.711	  0.761	  0.895
-Random forest	      0.827	  0.833	    0.658	  0.735	  0.848
-SVM (kernel rbf)	  0.817	  0.732	    0.789	  0.759	  0.852
-Concatenated CNN	  0.933	  0.970	    0.842	  0.901	  0.922
+ Statistics         | Accuracy | Precision | Recall | F1 score | AUC ROC |
+|-------------------|----------|-----------|--------|----------|---------|
+|Logistic regression|0.837     |0.818      |0.711   |0.761     |0.895    |
+|Random forest      |	0.827  |0.833      |0.658   |0.735     |0.848    |
+|SVM (kernel rbf)   |0.817     |0.732      |0.789   |0.759     |0.852    |
+|Concatenated CNN   |0.933     |0.970      |0.842   |0.901     |0.922    |
 
 
