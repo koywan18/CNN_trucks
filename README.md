@@ -40,7 +40,7 @@ Thereafter is displayed the comparison between models for various statistics:
  Statistics         | Accuracy | Precision | Recall | F1 score | AUC ROC |
 |-------------------|----------|-----------|--------|----------|---------|
 |Logistic regression|0.837     |0.818      |0.711   |0.761     |0.895    |
-|Random forest      |	0.827  |0.833      |0.658   |0.735     |0.848    |
+|Random forest      |	0.827    |0.833      |0.658   |0.735     |0.848    |
 |SVM (kernel rbf)   |0.817     |0.732      |0.789   |0.759     |0.852    |
 |Concatenated CNN   |0.933     |0.970      |0.842   |0.901     |0.922    |
 
