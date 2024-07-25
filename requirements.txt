@@ -6,3 +6,5 @@ pandas
 tqdm
 h3
 plotly
+ipykernel
+jupyter
